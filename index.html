@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Families Flashcard - Enhanced</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 { 
+            color: #667eea; 
+            font-size: 1.8rem; 
+            margin-bottom: 6px; 
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle { 
+            color: #764ba2; 
+            font-size: 0.9rem; 
+            margin-bottom: 15px; 
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .family-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            max-height: 140px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+        
+        .family-selector::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .family-selector::-webkit-scrollbar-track {
+            background: #e0e0e0;
+            border-radius: 10px;
+        }
+        
+        .family-selector::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .family-btn {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-width: 50px;
+        }
+
+        .family-btn.active { 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; 
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+        
+        .family-btn:hover { 
+            background: #667eea; 
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .flashcard {
+            width: 100%;
+            max-width: 420px;
+            height: 250px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 18px;
+            padding: 12px;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            margin: 0 auto 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .flashcard {
+                height: 230px;
+                padding: 10px;
+            }
+        }
+        
+        @media (orientation: landscape) and (max-height: 600px) {
+            .flashcard {
+                height: 200px;
+                max-width: 380px;
+            }
+        }
+
+        .spiral-holes {
+            position: absolute;
+            top: -15px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: repeating-linear-gradient(90deg, 
+                transparent 0px, 
+                transparent 25px, 
+                rgba(255, 255, 255, 0.95) 25px, 
+                rgba(255, 255, 255, 0.95) 38px);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .card-header {
+            background: white;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            margin: 10px 0 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .family-badge {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            min-width: 60px;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(245, 87, 108, 0.3);
+        }
+
+        .gujarati-meaning-header {
+            font-size: 14px;
+            font-weight: bold;
+            color: #764ba2;
+            background: #f0f0f0;
+            padding: 8px 12px;
+            border-radius: 18px;
+            flex: 1;
+            text-align: center;
+            margin: 0 12px;
+        }
+
+        .pronounce-btn {
+            background: #667eea;
+            border: none;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 20px;
+            box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .pronounce-btn:hover { 
+            background: #764ba2; 
+            transform: scale(1.15) rotate(10deg);
+        }
+
+        .pronounce-btn:active {
+            transform: scale(0.95);
+        }
+
+        .card-main {
+            background: white;
+            height: 168px;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .card-main {
+                height: 150px;
+                padding: 12px;
+            }
+        }
+        
+        @media (orientation: landscape) and (max-height: 600px) {
+            .card-main {
+                height: 130px;
+                padding: 10px;
+            }
+        }
+
+        .main-word {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .click-hint {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            padding: 5px 12px;
+            border-radius: 18px;
+            font-size: 12px;
+            color: #d63031;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+            box-shadow: 0 2px 6px rgba(253, 203, 110, 0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .word-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .prefix-part {
+            color: #d32f2f;
+            font-size: 44px;
+            font-weight: 900;
+            text-shadow: 3px 3px 6px rgba(211, 47, 47, 0.3);
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .prefix-part:hover {
+            transform: scale(1.1) rotate(2deg);
+            color: #b71c1c;
+        }
+
+        .prefix-part:active {
+            transform: scale(0.95);
+        }
+
+        .suffix-part {
+            color: #1565c0;
+            font-size: 44px;
+            font-weight: 900;
+            text-shadow: 3px 3px 6px rgba(21, 101, 192, 0.3);
+            letter-spacing: 1px;
+            user-select: none;
+        }
+
+        @media (max-width: 768px) {
+            .prefix-part, .suffix-part {
+                font-size: 38px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .prefix-part, .suffix-part {
+                font-size: 34px;
+            }
+        }
+        
+        @media (orientation: landscape) and (max-height: 600px) {
+            .prefix-part, .suffix-part {
+                font-size: 36px;
+            }
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 18px auto;
+            max-width: 420px;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover { 
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 6px 18px rgba(102, 126, 234, 0.5);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.9);
+        }
+        
+        .nav-btn:disabled { 
+            background: #cccccc; 
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .control-center { 
+            display: flex; 
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .shuffle-btn, .auto-play-btn {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            color: white;
+            border: none;
+            border-radius: 22px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(250, 112, 154, 0.3);
+        }
+
+        .shuffle-btn:hover, .auto-play-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(250, 112, 154, 0.4);
+        }
+
+        .auto-play-btn.active { 
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+        }
+
+        .progress {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            max-width: 420px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin: 10px auto;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .score-item {
+            background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+            padding: 10px 16px;
+            border-radius: 18px;
+            font-weight: bold;
+            color: #2d3436;
+            font-size: 14px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        .school-footer {
+            margin-top: 18px;
+            font-weight: bold;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #667eea);
+            background-size: 300% 300%;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 16px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            animation: shimmer 3s ease infinite;
+            font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
+            color: #fff;
+            text-shadow: 
+                0 0 10px rgba(255,255,255,0.8),
+                0 0 20px rgba(255,255,255,0.6),
+                0 0 30px rgba(255,255,255,0.4),
+                2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .quiz-btn {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 3px 8px rgba(245, 87, 108, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quiz-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        #quizSection {
+            background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+            padding: 20px;
+            border-radius: 18px;
+            max-width: 420px;
+            margin: 0 auto;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        #quizQuestion {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2d3436;
+            text-align: center;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        #quizOptions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quiz-option {
+            background: white;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            padding: 14px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s;
+            font-size: 15px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        .quiz-option:hover:not(.correct):not(.wrong) {
+            background: #f8f9fa;
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .quiz-option.correct {
+            background: #38ef7d;
+            color: white;
+            border-color: #11998e;
+            animation: correctPulse 0.5s;
+        }
+
+        .quiz-option.wrong {
+            background: #ff6b6b;
+            color: white;
+            border-color: #ee5a6f;
+            animation: shake 0.5s;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        #quizResult {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 16px;
+            padding: 10px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        #quizScore {
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: #2d3436;
+            font-size: 18px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        #nextQ {
+            margin: 15px auto 0;
+            display: none;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
+        }
+
+        #nextQ:hover {
+            transform: scale(1.15);
+            box-shadow: 0 6px 18px rgba(102, 126, 234, 0.5);
+        }
+
+        .quiz-home-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
+        }
+
+        .quiz-home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.5);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 WORD FAMILIES LIST</h1>
+        <p class="subtitle">Learn word families with Gujarati meanings • ઉપસર્ગ અને પ્રત્યય સાથે શીખો</p>
+
+        <div class="family-selector" id="familySelector"></div>
+
+        <div id="flashcardSection">
+            <div class="flashcard">
+                <div class="spiral-holes"></div>
+                <div class="card-header">
+                    <div class="family-badge" id="familyBadge">ack</div>
+                    <div class="gujarati-meaning-header" id="gujarati">હુમલો</div>
+                    <button class="pronounce-btn" onclick="pronounce()" title="ઉચ્ચાર સાંભળો">
+                        🔊
+                    </button>
+                </div>
+                <div class="card-main">
+                    <div class="main-word">
+                        <div class="click-hint">👇 લાલ ભાગ પર ક્લિક કરો</div>
+                        <div class="word-display">
+                            <span class="prefix-part" id="prefixPart" onclick="nextWord()">Att</span>
+                            <span class="suffix-part" id="suffixPart">ack</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="nav-btn" id="prevBtn" onclick="prevWord()">
+                    ⬅️
+                </button>
+                <div class="control-center">
+                    <button class="shuffle-btn" onclick="shuffle()">
+                        🔀 Shuffle
+                    </button>
+                    <button class="auto-play-btn" id="autoBtn" onclick="toggleAuto()">
+                        ▶️ Auto
+                    </button>
+                </div>
+                <button class="nav-btn" id="nextBtn" onclick="nextWord()">
+                    ➡️
+                </button>
+            </div>
+
+            <div class="progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress"></div>
+                </div>
+                <span id="current">1</span>/<span id="total">10</span> words in <strong id="currentFamily">-ack</strong>
+            </div>
+
+            <div class="score-display">
+                <div class="score-item">
+                    👁️ Viewed: <span id="viewed">0</span>
+                </div>
+                <div class="score-item">
+                    🔊 Pronounced: <span id="pronounced">0</span>
+                </div>
+                <button class="quiz-btn" onclick="toggleQuiz()" id="quizBtn">
+                    ❓ Quiz Mode
+                </button>
+            </div>
+
+            <div class="school-footer">
+  
